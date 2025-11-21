@@ -5,6 +5,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ClientsPage from './pages/ClientsPage';
 import ProjectsPage from './pages/ProjectsPage';
+import ComponentsPage from './pages/ComponentsPage';
+import CreateComponentPage from './pages/CreateComponentPage';
 import Layout from './components/Layout';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           }
         >
           <Route index element={<DashboardPage />} />
+          <Route path="components" element={<ComponentsPage />} />
+          <Route path="components/new" element={<CreateComponentPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="projects" element={<ProjectsPage />} />
         </Route>
