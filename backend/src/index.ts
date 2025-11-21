@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes';
 import agencyRoutes from './routes/agency.routes';
 import clientRoutes from './routes/client.routes';
 import projectRoutes from './routes/project.routes';
+import componentRoutes from './routes/component.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/agencies', agencyRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/components', componentRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
