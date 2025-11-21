@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================================
+// AUTHENTICATION & USERS
+// ===================================
+
+enum UserRole {
+  SUPER_ADMIN   // Admin global de la plateforme
+  AGENCY_ADMIN  // Admin d'une agence
+  AGENCY_MEMBER // Membre d'une agence
+  CLIENT        // Client (lecture seule)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  role      UserRole @default(AGENCY_MEMBER)
+
+  // Relations
+  agencyId  String?
+  agency    Agency?  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@map("users")
+}
+
+// ===================================
+// MULTI-TENANT: AGENCY → CLIENT → PROJECT
+// ===================================
+
+model Agency {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+
+  // Relations
+  users       User[]
+  clients     Client[]
+  components  Component[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("agencies")
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+
+  // Relations
+  agencyId    String
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  projects    Project[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([agencyId, slug])
+  @@index([agencyId])
+  @@map("clients")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+
+  // Design tokens (JSON)
+  designTokens Json?
+
+  // Relations
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pages       Page[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([clientId, slug])
+  @@index([clientId])
+  @@map("projects")
+}
+
+// ===================================
+// COMPONENTS LIBRARY (Agency level)
+// ===================================
+
+model Component {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  category    String?  // Hero, CTA, Form, etc.
+
+  // Component structure (JSON)
+  // { fields: [...], defaultProps: {...}, variants: [...] }
+  schema      Json
+
+  // Preview thumbnail
+  thumbnail   String?
+
+  // Relations
+  agencyId    String
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  pageComponents PageComponent[]
+
+  // Versioning
+  version     String   @default("1.0.0")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([agencyId, slug])
+  @@index([agencyId])
+  @@index([category])
+  @@map("components")
+}
+
+// ===================================
+// PAGES & PAGE BUILDER
+// ===================================
+
+model Page {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+
+  // Page metadata
+  title       String?
+  description String?
+
+  // Relations
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  components  PageComponent[]
+
+  // Publishing
+  status      PageStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([status])
+  @@map("pages")
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Junction table: Page + Component instance
+model PageComponent {
+  id          String   @id @default(cuid())
+
+  // Position in page
+  order       Int
+
+  // Component configuration (JSON)
+  // Contains the actual field values for this instance
+  config      Json
+
+  // Applied styles/overrides (JSON)
+  styles      Json?
+
+  // Relations
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id], onDelete: Restrict)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([pageId])
+  @@index([componentId])
+  @@map("page_components")
+}
