@@ -19,7 +19,7 @@
             button.prop('disabled', true).text('Saving...');
 
             $.ajax({
-                url: ajaxurl,
+                url: hbSync.ajaxUrl,
                 type: 'POST',
                 data: {
                     action: 'hb_save_settings',

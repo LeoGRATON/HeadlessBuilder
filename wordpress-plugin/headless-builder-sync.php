@@ -55,6 +55,7 @@ class Headless_Builder_Sync {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('rest_api_init', array($this, 'register_rest_routes'));
+        add_action('wp_ajax_hb_save_settings', array($this, 'ajax_save_settings'));
     }
 
     /**
@@ -96,6 +97,7 @@ class Headless_Builder_Sync {
         );
 
         wp_localize_script('hb-sync-admin', 'hbSync', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
             'restUrl' => rest_url('headless-builder/v1/'),
             'nonce' => wp_create_nonce('wp_rest'),
         ));
@@ -283,6 +285,27 @@ class Headless_Builder_Sync {
             </div>
         </div>
         <?php
+    }
+
+    /**
+     * AJAX handler to save settings
+     */
+    public function ajax_save_settings() {
+        check_ajax_referer('wp_rest', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized');
+        }
+
+        $builder_url = sanitize_text_field($_POST['builder_url']);
+        $project_id = sanitize_text_field($_POST['project_id']);
+        $api_token = sanitize_text_field($_POST['api_token']);
+
+        update_option('hb_builder_url', $builder_url);
+        update_option('hb_project_id', $project_id);
+        update_option('hb_api_token', $api_token);
+
+        wp_send_json_success('Settings saved');
     }
 }
 
