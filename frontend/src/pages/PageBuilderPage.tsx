@@ -89,11 +89,17 @@ export default function PageBuilderPage() {
 
     // Build default config from schema
     const defaultConfig: Record<string, any> = {};
-    component.schema.fields.forEach((field: any) => {
-      if (field.defaultValue !== undefined) {
-        defaultConfig[field.name] = field.defaultValue;
-      }
-    });
+    const schema = typeof component.schema === 'string'
+      ? JSON.parse(component.schema)
+      : component.schema;
+
+    if (schema?.fields) {
+      schema.fields.forEach((field: any) => {
+        if (field.defaultValue !== undefined) {
+          defaultConfig[field.name] = field.defaultValue;
+        }
+      });
+    }
 
     addComponentMutation.mutate({
       componentId,
@@ -269,7 +275,11 @@ export default function PageBuilderPage() {
             </div>
 
             <div className="space-y-4">
-              {editingComponent.component.schema.fields.map((field) => (
+              {(() => {
+                const schema = typeof editingComponent.component.schema === 'string'
+                  ? JSON.parse(editingComponent.component.schema)
+                  : editingComponent.component.schema;
+                return schema?.fields?.map((field: any) => (
                 <div key={field.name}>
                   <label className="block text-sm font-medium text-gray-700">
                     {field.label} {field.required && <span className="text-red-500">*</span>}
@@ -313,7 +323,8 @@ export default function PageBuilderPage() {
                     />
                   )}
                 </div>
-              ))}
+              ));
+              })()}
 
               <div className="flex justify-end space-x-3 pt-4">
                 <button
