@@ -16,7 +16,16 @@
       "Bash(docker logs:*)",
       "Bash(node:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit - Headless Builder MVP\n\nSetup Phase 1.1: Auth & Multi-tenant\n\nFeatures:\n- Express backend with TypeScript\n- Prisma ORM with PostgreSQL multi-tenant schema\n- JWT authentication (register, login, me)\n- React frontend with Vite + TailwindCSS\n- Docker compose for PostgreSQL + Redis\n- Multi-tenant architecture: Agency → Clients → Projects → Pages\n- CRUD routes for agencies, clients, and projects\n\nArchitecture:\n- Backend: Express + Prisma + PostgreSQL\n- Frontend: React + Vite + Zustand + React Query\n- Database: PostgreSQL (Docker)\n- Auth: JWT with bcrypt\nEOF\n)\")",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(gh:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []
