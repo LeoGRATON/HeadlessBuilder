@@ -30,7 +30,9 @@ export default function ProjectExportPage() {
       setDownloading('acf');
       const response = await api.get(`/export/projects/${id}/acf`);
 
-      const blob = new Blob([JSON.stringify(response.data.data, null, 2)], {
+      // ACF expects an array of field groups directly
+      const fieldGroups = response.data.data.fieldGroups;
+      const blob = new Blob([JSON.stringify(fieldGroups, null, 2)], {
         type: 'application/json',
       });
 
