@@ -85,7 +85,7 @@ export const register = async (req: Request, res: Response) => {
       agencyId: result.agency.id,
     },
     process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    { expiresIn: '7d' }
   );
 
   res.status(201).json({
@@ -137,7 +137,7 @@ export const login = async (req: Request, res: Response) => {
       agencyId: user.agencyId,
     },
     process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    { expiresIn: '7d' }
   );
 
   res.json({
@@ -163,9 +163,6 @@ export const login = async (req: Request, res: Response) => {
 export const me = async (req: AuthRequest, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user!.id },
-    include: {
-      agency: true,
-    },
     select: {
       id: true,
       email: true,

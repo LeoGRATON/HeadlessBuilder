@@ -9,6 +9,7 @@ import clientRoutes from './routes/client.routes';
 import projectRoutes from './routes/project.routes';
 import componentRoutes from './routes/component.routes';
 import pageRoutes from './routes/page.routes';
+import exportRoutes from './routes/export.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +31,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/components', componentRoutes);
 app.use('/api/pages', pageRoutes);
+app.use('/api/export', exportRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
