@@ -7,6 +7,9 @@ import ClientsPage from './pages/ClientsPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ComponentsPage from './pages/ComponentsPage';
 import CreateComponentPage from './pages/CreateComponentPage';
+import PagesPage from './pages/PagesPage';
+import CreatePagePage from './pages/CreatePagePage';
+import PageBuilderPage from './pages/PageBuilderPage';
 import Layout from './components/Layout';
 
 function App() {
@@ -29,6 +32,9 @@ function App() {
           <Route path="components/new" element={<CreateComponentPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="projects" element={<ProjectsPage />} />
+          <Route path="pages" element={<PagesPage />} />
+          <Route path="pages/new" element={<CreatePagePage />} />
+          <Route path="pages/:id/builder" element={<PageBuilderPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
