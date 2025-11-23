@@ -11,7 +11,7 @@ import ComponentVersionsPage from './pages/ComponentVersionsPage';
 import ComponentVariantsPage from './pages/ComponentVariantsPage';
 import PagesPage from './pages/PagesPage';
 import CreatePagePage from './pages/CreatePagePage';
-import PageBuilderPage from './pages/PageBuilderPage';
+import PageBuilderPage from './pages/PageBuilderPageV2';
 import ProjectExportPage from './pages/ProjectExportPage';
 import Layout from './components/Layout';
 
