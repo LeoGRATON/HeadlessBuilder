@@ -382,15 +382,30 @@ function AddComponentModal({ components, onClose, onAdd }: any) {
               onChange={(e) => {
                 const comp = components.find((c: any) => c.id === e.target.value);
                 setSelectedComponent(comp);
+
+                if (!comp) {
+                  setConfig({});
+                  return;
+                }
+
                 // Initialize config with default values
-                const schema = typeof comp.schema === 'string' ? JSON.parse(comp.schema) : comp.schema;
-                const defaultConfig: any = {};
-                schema.fields?.forEach((field: any) => {
-                  if (field.defaultValue !== undefined) {
-                    defaultConfig[field.name] = field.defaultValue;
+                try {
+                  const schema = typeof comp.schema === 'string' ? JSON.parse(comp.schema) : comp.schema;
+                  const defaultConfig: any = {};
+
+                  if (schema && schema.fields) {
+                    schema.fields.forEach((field: any) => {
+                      if (field.defaultValue !== undefined) {
+                        defaultConfig[field.name] = field.defaultValue;
+                      }
+                    });
                   }
-                });
-                setConfig(defaultConfig);
+
+                  setConfig(defaultConfig);
+                } catch (error) {
+                  console.error('Error parsing component schema:', error);
+                  setConfig({});
+                }
               }}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             >
