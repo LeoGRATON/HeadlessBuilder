@@ -114,7 +114,7 @@ model Component {
   category    String?  // Hero, CTA, Form, etc.
 
   // Component structure (JSON)
-  // { fields: [...], defaultProps: {...}, variants: [...] }
+  // { fields: [...], defaultProps: {...} }
   schema      Json
 
   // Preview thumbnail
@@ -124,9 +124,14 @@ model Component {
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   pageComponents PageComponent[]
+  versions    ComponentVersion[]
+  variants    ComponentVariant[]
 
-  // Versioning
-  version     String   @default("1.0.0")
+  // Current version
+  currentVersion String @default("1.0.0")
+
+  // Is this component deprecated?
+  deprecated  Boolean @default(false)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -135,6 +140,59 @@ model Component {
   @@index([agencyId])
   @@index([category])
   @@map("components")
+}
+
+// Component versioning - full history
+model ComponentVersion {
+  id          String   @id @default(cuid())
+  version     String   // Semantic versioning: 1.0.0, 1.1.0, 2.0.0
+
+  // Snapshot of component at this version
+  name        String
+  description String?
+  schema      Json
+  thumbnail   String?
+
+  // Changelog for this version
+  changelog   String?
+
+  // Relations
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  // Who created this version
+  createdBy   String?
+  createdAt   DateTime @default(now())
+
+  @@unique([componentId, version])
+  @@index([componentId])
+  @@map("component_versions")
+}
+
+// Component variants - same structure, different styles/configs
+model ComponentVariant {
+  id          String   @id @default(cuid())
+  name        String   // "Large", "Compact", "Dark", etc.
+  slug        String
+  description String?
+
+  // Variant-specific config overrides (JSON)
+  // Can override default values, add style classes, etc.
+  config      Json
+
+  // Is this the default variant?
+  isDefault   Boolean  @default(false)
+
+  // Relations
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([componentId, slug])
+  @@index([componentId])
+  @@map("component_variants")
 }
 
 // ===================================
@@ -188,6 +246,12 @@ model PageComponent {
   // Applied styles/overrides (JSON)
   styles      Json?
 
+  // Which variant is used (optional)
+  variantId   String?
+
+  // Which version is locked (optional - if null, uses current)
+  lockedVersion String?
+
   // Relations
   pageId      String
   page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
@@ -200,5 +264,6 @@ model PageComponent {
 
   @@index([pageId])
   @@index([componentId])
+  @@index([variantId])
   @@map("page_components")
 }

@@ -41,9 +41,81 @@ function mapFieldTypeToACF(fieldType: string): string {
     number: 'number',
     boolean: 'true_false',
     select: 'select',
+    repeater: 'repeater',
+    group: 'group',
+    flexible_content: 'flexible_content',
   };
 
   return typeMap[fieldType] || 'text';
+}
+
+/**
+ * Generate ACF field from schema field (supports nested fields for repeater/group)
+ */
+function generateACFField(field: any, componentSlug: string, parentKey: string = ''): any {
+  const fieldKey = parentKey ? `${parentKey}_${field.name}` : `field_${componentSlug}_${field.name}`;
+
+  const acfField: any = {
+    key: fieldKey,
+    label: field.label,
+    name: field.name,
+    type: mapFieldTypeToACF(field.type),
+    required: field.required ? 1 : 0,
+  };
+
+  // Add optional properties
+  if (field.defaultValue !== undefined) {
+    acfField.default_value = field.defaultValue;
+  }
+  if (field.placeholder) {
+    acfField.placeholder = field.placeholder;
+  }
+  if (field.helpText) {
+    acfField.instructions = field.helpText;
+  }
+
+  // Handle select field choices
+  if (field.type === 'select' && field.choices) {
+    acfField.choices = field.choices.reduce((acc: any, choice: any) => {
+      acc[choice.value] = choice.label;
+      return acc;
+    }, {});
+  }
+
+  // Handle repeater fields (with sub_fields)
+  if (field.type === 'repeater' && field.subFields) {
+    acfField.sub_fields = field.subFields.map((subField: any) =>
+      generateACFField(subField, componentSlug, fieldKey)
+    );
+    acfField.layout = field.layout || 'table';
+    acfField.button_label = field.buttonLabel || 'Add Row';
+    if (field.min !== undefined) acfField.min = field.min;
+    if (field.max !== undefined) acfField.max = field.max;
+  }
+
+  // Handle group fields
+  if (field.type === 'group' && field.subFields) {
+    acfField.sub_fields = field.subFields.map((subField: any) =>
+      generateACFField(subField, componentSlug, fieldKey)
+    );
+    acfField.layout = field.layout || 'block';
+  }
+
+  // Handle flexible content
+  if (field.type === 'flexible_content' && field.layouts) {
+    acfField.layouts = field.layouts.map((layout: any, index: number) => ({
+      key: `${fieldKey}_layout_${index}`,
+      name: layout.name,
+      label: layout.label,
+      display: layout.display || 'block',
+      sub_fields: layout.subFields.map((subField: any) =>
+        generateACFField(subField, componentSlug, `${fieldKey}_layout_${index}`)
+      ),
+    }));
+    acfField.button_label = field.buttonLabel || 'Add Row';
+  }
+
+  return acfField;
 }
 
 /**
@@ -54,28 +126,9 @@ function generateComponentFieldGroup(
   pageSlug: string,
   order: number
 ): ACFFieldGroup {
-  const fields: ACFField[] = component.schema.fields.map((field: any, index: number) => {
-    const acfField: ACFField = {
-      key: `field_${component.slug}_${field.name}`,
-      label: field.label,
-      name: field.name,
-      type: mapFieldTypeToACF(field.type),
-      required: field.required ? 1 : 0,
-    };
-
-    // Add optional properties
-    if (field.defaultValue !== undefined) {
-      acfField.default_value = field.defaultValue;
-    }
-    if (field.placeholder) {
-      acfField.placeholder = field.placeholder;
-    }
-    if (field.helpText) {
-      acfField.instructions = field.helpText;
-    }
-
-    return acfField;
-  });
+  const fields: ACFField[] = component.schema.fields.map((field: any) =>
+    generateACFField(field, component.slug)
+  );
 
   return {
     key: `group_${pageSlug}_${component.slug}`,

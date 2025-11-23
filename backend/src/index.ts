@@ -8,6 +8,8 @@ import agencyRoutes from './routes/agency.routes';
 import clientRoutes from './routes/client.routes';
 import projectRoutes from './routes/project.routes';
 import componentRoutes from './routes/component.routes';
+import componentVersionRoutes from './routes/component-version.routes';
+import componentVariantRoutes from './routes/component-variant.routes';
 import pageRoutes from './routes/page.routes';
 import exportRoutes from './routes/export.routes';
 
@@ -30,6 +32,8 @@ app.use('/api/agencies', agencyRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/components', componentRoutes);
+app.use('/api', componentVersionRoutes);
+app.use('/api', componentVariantRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/export', exportRoutes);
 

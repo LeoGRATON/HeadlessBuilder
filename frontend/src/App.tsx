@@ -7,6 +7,8 @@ import ClientsPage from './pages/ClientsPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ComponentsPage from './pages/ComponentsPage';
 import CreateComponentPage from './pages/CreateComponentPage';
+import ComponentVersionsPage from './pages/ComponentVersionsPage';
+import ComponentVariantsPage from './pages/ComponentVariantsPage';
 import PagesPage from './pages/PagesPage';
 import CreatePagePage from './pages/CreatePagePage';
 import PageBuilderPage from './pages/PageBuilderPage';
@@ -31,6 +33,8 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="components" element={<ComponentsPage />} />
           <Route path="components/new" element={<CreateComponentPage />} />
+          <Route path="components/:id/versions" element={<ComponentVersionsPage />} />
+          <Route path="components/:id/variants" element={<ComponentVariantsPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/:id/export" element={<ProjectExportPage />} />

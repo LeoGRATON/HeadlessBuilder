@@ -214,7 +214,7 @@ export default function ComponentsPage() {
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-gray-500">v{component.version}</span>
+                  <span className="text-xs text-gray-500">v{component.currentVersion || component.version}</span>
                 </div>
 
                 {component.description && (
@@ -230,19 +230,35 @@ export default function ComponentsPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="mt-4 flex space-x-2">
-                  <Link
-                    to={`/components/${component.id}`}
-                    className="flex-1 text-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    to={`/components/${component.id}/edit`}
-                    className="flex-1 text-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    Edit
-                  </Link>
+                <div className="mt-4 space-y-2">
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/components/${component.id}`}
+                      className="flex-1 text-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      to={`/components/${component.id}/edit`}
+                      className="flex-1 text-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/components/${component.id}/versions`}
+                      className="flex-1 text-center px-3 py-2 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      Versions
+                    </Link>
+                    <Link
+                      to={`/components/${component.id}/variants`}
+                      className="flex-1 text-center px-3 py-2 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      Variants
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

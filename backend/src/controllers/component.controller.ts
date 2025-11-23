@@ -87,7 +87,8 @@ export const getComponents = async (req: AuthRequest, res: Response) => {
       category: true,
       description: true,
       thumbnail: true,
-      version: true,
+      currentVersion: true,
+      deprecated: true,
       createdAt: true,
       updatedAt: true,
       _count: {
@@ -163,6 +164,21 @@ export const createComponent = async (req: AuthRequest, res: Response) => {
       schema: data.schema,
       thumbnail: data.thumbnail,
       agencyId: req.user.agencyId,
+      currentVersion: '1.0.0',
+    },
+  });
+
+  // Create initial version
+  await prisma.componentVersion.create({
+    data: {
+      version: '1.0.0',
+      name: component.name,
+      description: component.description,
+      schema: component.schema as any,
+      thumbnail: component.thumbnail,
+      changelog: 'Initial version',
+      componentId: component.id,
+      createdBy: req.user.id,
     },
   });
 
