@@ -275,6 +275,48 @@ export const deletePage = async (req: AuthRequest, res: Response) => {
   res.status(204).send();
 };
 
+// Get page components
+export const getPageComponents = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+
+  const page = await prisma.page.findUnique({
+    where: { id },
+    include: {
+      project: {
+        include: {
+          client: true,
+        },
+      },
+      components: {
+        include: {
+          component: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              category: true,
+              schema: true,
+              thumbnail: true,
+            },
+          },
+        },
+        orderBy: { order: 'asc' },
+      },
+    },
+  });
+
+  if (!page) {
+    throw new AppError(404, 'Page not found');
+  }
+
+  // Check if page belongs to user's agency
+  if (page.project.client.agencyId !== req.user?.agencyId) {
+    throw new AppError(403, 'Access denied');
+  }
+
+  res.json(page.components);
+};
+
 // Add component to page
 export const addComponentToPage = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;

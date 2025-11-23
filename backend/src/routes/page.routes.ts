@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getPages,
   getPage,
+  getPageComponents,
   createPage,
   updatePage,
   deletePage,
@@ -25,6 +26,7 @@ router.put('/:id', updatePage);
 router.delete('/:id', deletePage);
 
 // Page components management
+router.get('/:id/components', getPageComponents);
 router.post('/:id/components', addComponentToPage);
 router.delete('/:id/components/:componentId', removeComponentFromPage);
 router.put('/:id/components/:componentId', updatePageComponent);

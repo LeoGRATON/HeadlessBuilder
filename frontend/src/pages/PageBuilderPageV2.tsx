@@ -470,6 +470,10 @@ function EditComponentModal({ pageComponent, onClose, onSave }: any) {
 
 // Component Config Form
 function ComponentConfigForm({ component, config, onChange }: any) {
+  if (!component || !component.schema) {
+    return <div className="text-gray-500">Component schema not available</div>;
+  }
+
   const schema = typeof component.schema === 'string'
     ? JSON.parse(component.schema)
     : component.schema;
@@ -477,6 +481,10 @@ function ComponentConfigForm({ component, config, onChange }: any) {
   const handleFieldChange = (fieldName: string, value: any) => {
     onChange({ ...config, [fieldName]: value });
   };
+
+  if (!schema || !schema.fields) {
+    return <div className="text-gray-500">No fields defined for this component</div>;
+  }
 
   return (
     <div className="space-y-4">
